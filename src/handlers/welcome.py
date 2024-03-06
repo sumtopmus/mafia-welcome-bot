@@ -42,7 +42,8 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Встречайте – {titled_mention} ({user.mention_markdown()})!\n\n"
             f"*Город:* {context.bot_data['players'][user.id]['city']}\n"
             f"*Клуб:* {context.bot_data['players'][user.id]['club']}\n"
-            f"*Стаж:* {context.bot_data['players'][user.id]['experience']}")
+            f"*Стаж:* {context.bot_data['players'][user.id]['experience']}\n\n"
+            "_#about_")
         await context.bot.sendMessage(
             chat_id=update.message.chat.id, text=message,
             reply_to_message_id=update.message.id)
