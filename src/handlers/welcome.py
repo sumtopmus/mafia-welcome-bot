@@ -38,11 +38,11 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
             continue
         handle = user.username if user.username else user.full_name
         message = (
-            'В нашей большой семье AML пополнение!\n\n'
-            f'Встречайте – {titled_mention} ({user.mention_markdown()})!\n\n'
-            f'*Город:* {context.bot_data['players'][user.id]['city']}\n'
-            f'*Клуб:* {context.bot_data['players'][user.id]['club']}\n'
-            f'*Стаж:* {context.bot_data['players'][user.id]['experience']}')
+            "В нашей большой семье AML пополнение!\n\n"
+            f"Встречайте – {titled_mention} ({user.mention_markdown()})!\n\n"
+            f"*Город:* {context.bot_data['players'][user.id]['city']}\n"
+            f"*Клуб:* {context.bot_data['players'][user.id]['club']}\n"
+            f"*Стаж:* {context.bot_data['players'][user.id]['experience']}")
         await context.bot.sendMessage(
             chat_id=update.message.chat.id, text=message,
             reply_to_message_id=update.message.id)
