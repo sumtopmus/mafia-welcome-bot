@@ -23,6 +23,9 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user.is_bot:
             utils.log(f'new user is a bot')
             continue
+        if user.id not in context.bot_data['players']:
+            utils.log(f'no data for accepted user {user.id} ({user.full_name})', logging.INFO)
+            continue
         titled_mention = context.bot_data['players'][user.id]['nickname']
         title = context.bot_data['players'][user.id]['title']
         if title:
