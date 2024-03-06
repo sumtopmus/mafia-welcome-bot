@@ -1,0 +1,23 @@
+[default]
+# Dev mode
+DEBUG = false
+# Pathes
+DB_PATH = 'data/db'
+LOG_PATH = 'logs/bot.log'
+# Internal parameters
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+# Notification message
+TIMEZONE = 'US/Eastern'
+ADMINS = [ '@PLACEHOLDER' ]
+
+[production]
+DEBUG = false
+TOKEN = 'SECRET_PLACEHOLDER'
+CHANNEL_USERNAME = 'PLACEHOLDER'
+CHAT_ID = 'PLACEHOLDER'
+
+[development]
+DEBUG = true
+TOKEN = 'SECRET_PLACEHOLDER'
+CHANNEL_USERNAME = 'PLACEHOLDER'
+CHAT_ID = 'PLACEHOLDER'
