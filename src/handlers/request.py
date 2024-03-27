@@ -33,11 +33,11 @@ def create_handlers() -> list:
             CommandHandler('join', join_request),
         ],
         states={
-            State.WAITING_FOR_NICKNAME: [MessageHandler(filters.ALL, set_nickname)],
+            State.WAITING_FOR_NICKNAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, set_nickname)],
             State.WAITING_FOR_TITLE: [CallbackQueryHandler(set_title)],
-            State.WAITING_FOR_CITY: [MessageHandler(filters.ALL, set_city)],
-            State.WAITING_FOR_CLUB: [MessageHandler(filters.ALL, set_club)],
-            State.WAITING_FOR_EXPERIENCE: [MessageHandler(filters.ALL, set_experience)],
+            State.WAITING_FOR_CITY: [MessageHandler(filters.TEXT & ~filters.COMMAND, set_city)],
+            State.WAITING_FOR_CLUB: [MessageHandler(filters.TEXT & ~filters.COMMAND, set_club)],
+            State.WAITING_FOR_EXPERIENCE: [MessageHandler(filters.TEXT & ~filters.COMMAND, set_experience)],
             ConversationHandler.TIMEOUT: [TypeHandler(Update, timeout)],
         },
         fallbacks=[
@@ -148,6 +148,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     log('cancel')
     message = 'Ты можешь попробовать снова позже.'
     await update.message.reply_text(message)
-    await update.chat_join_request.from_user.decline_join_request(
-        update.chat_join_request.chat.id)
+    if update.chat_join_request:
+        await update.chat_join_request.from_user.decline_join_request(
+            update.chat_join_request.chat.id)
     return ConversationHandler.END
