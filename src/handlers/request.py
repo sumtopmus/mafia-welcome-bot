@@ -43,6 +43,7 @@ def create_handlers() -> list:
         fallbacks=[
             CommandHandler('cancel', cancel),
         ],
+        allow_reentry=True,
         conversation_timeout=settings.CONVERSATION_TIMEOUT,
         name="welcome",
         per_chat=False,
@@ -58,10 +59,10 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
         return ConversationHandler.END
     context.bot_data['players'].setdefault(user.id, {'first_join_timestamp': datetime.now().isoformat()})
     context.bot_data['players'][user.id]['introduced'] = False
-    message = (f'Доброе утро, {user.full_name}! American Mafia League приветствует тебя! '
-        'Подписывайся на наш канал, чтобы следить за событиями в AML.\n\n'
-        'Чтобы попасть в наш чат, тебе придётся заполнить небольшую анкету.\n\n'
-        'Начнём с простого: твой игровой ник?')
+    message = (f'Доброе утро, {user.full_name}! American Mafia League приветствует вас! '
+        'Подписывайтесь на наш канал, чтобы следить за событиями в AML.\n\n'
+        'Чтобы попасть в наш чат, вам придётся заполнить небольшую анкету.\n\n'
+        'Начнём с самого важного: ваш игровой ник?')
     channel = await context.bot.get_chat(settings.CHANNEL_USERNAME)
     keyboard = [[InlineKeyboardButton(text='Подписаться на канал', url=channel.link)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -74,7 +75,7 @@ async def set_nickname(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     log('set_nickname')
     nickname = update.message.text
     context.bot_data['players'][update.effective_user.id]['nickname'] = nickname
-    message = (f'Какое обращение ты предпочитаешь?')
+    message = (f'Какое обращение вы предпочитаете?')
     keyboard = [
         [
             InlineKeyboardButton("Г-н", callback_data=Action.MR.name),
@@ -99,7 +100,7 @@ async def set_title(update: Update, context: CallbackContext) -> State:
         context.bot_data['players'][update.effective_user.id]['title'] = 'г-жа'
     else:
         context.bot_data['players'][update.effective_user.id]['title'] = None
-    message = (f'Из какого ты города?')
+    message = (f'В каком городе вы проживаете?')
     await update.callback_query.edit_message_text(message)
     return State.WAITING_FOR_CITY
 
@@ -108,7 +109,7 @@ async def set_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     """When the city is submitted."""
     log('set_city')
     context.bot_data['players'][update.effective_user.id]['city'] = update.message.text
-    message = (f'В каком клубе ты играешь?')
+    message = (f'В каком клубе вы играете?')
     await update.message.reply_text(message)
     return State.WAITING_FOR_CLUB
 
@@ -117,7 +118,7 @@ async def set_club(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     """When the club is submitted."""
     log('set_club')
     context.bot_data['players'][update.effective_user.id]['club'] = update.message.text
-    message = (f'Как давно ты играешь в спортивную мафию?')
+    message = (f'Как давно вы играете в спортивную мафию?')
     await update.message.reply_text(message)
     return State.WAITING_FOR_EXPERIENCE
 
@@ -127,7 +128,7 @@ async def set_experience(update: Update, context: ContextTypes.DEFAULT_TYPE):
     log('set_experience')
     context.bot_data['players'][update.effective_user.id]['experience'] = update.message.text
     await update.effective_user.approve_join_request(settings.CHAT_ID)
-    message = (f'Спасибо за анкету! Теперь ты можешь пользоваться нашим чатом.')
+    message = (f'Спасибо за анкету! Теперь вы можете пользоваться нашим чатом.')
     keyboard = [[InlineKeyboardButton(text='Перейти к чату', url=settings.CHAT_INVITE_LINK)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(message, reply_markup=reply_markup)
@@ -137,7 +138,10 @@ async def set_experience(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def timeout(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When the conversation timepout is exceeded."""
     log('timeout')
-    message = 'Ты не прошёл анкету, так что, к сожалению, мы не можем пустить тебя в чат.'
+    message = (
+        'Уже прошли сутки, а вы всё ещё не заполнили анкету. '
+        'Мы отклоняем вашу заявку, но вы всегда можете податься '
+        'снова, нажав /join.')
     await update.effective_user.send_message(message)
     await update.effective_user.decline_join_request(settings.CHAT_ID)
     return ConversationHandler.END
@@ -146,7 +150,7 @@ async def timeout(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When a user cancels the process."""
     log('cancel')
-    message = 'Ты можешь попробовать снова позже.'
+    message = 'Вы можете заполнить анкету снова, нажав /join.'
     await update.message.reply_text(message)
     if update.chat_join_request:
         await update.chat_join_request.from_user.decline_join_request(
