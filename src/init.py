@@ -3,7 +3,7 @@ from telegram.ext import Application
 import utils
 from handlers import error
 from handlers import debug, info
-from handlers import request, welcome
+from handlers import request, schedule, welcome
 
 
 async def post_init(app: Application) -> None:
@@ -20,5 +20,5 @@ def add_handlers(app: Application) -> None:
     for module in [debug, info]:
         app.add_handlers(module.create_handlers())
     # General chat handling.
-    for module in [request, welcome]:
+    for module in [request, schedule, welcome]:
         app.add_handlers(module.create_handlers())

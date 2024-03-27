@@ -9,6 +9,8 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 # Notification message
 TIMEZONE = 'US/Eastern'
 ADMINS = [ '@PLACEHOLDER' ]
+# Content
+SCHEDULE_ID = 'AgACAgEAAxkDAANfZgSF5Lir429PSqqFakfY-LyEsQEAAseuMRs6EihEM1MCG0sbVyMBAAMCAAN5AAM0BA'
 
 [production]
 DEBUG = false
