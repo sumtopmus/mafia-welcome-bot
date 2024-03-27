@@ -30,4 +30,6 @@ async def schedule(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message = 'Пьём Маргариту и играем в баланс'
     elif dow == 6:
         message = 'Жива или мертва американская мафия?\n\nКто едет в Сакраменто?'
-    await update.message.reply_photo(settings.SCHEDULE_ID, caption=message)
+    await update.message.reply_photo(
+        settings.SCHEDULE_ID, caption=message,
+        reply_to_message_id=update.message.message_id)
