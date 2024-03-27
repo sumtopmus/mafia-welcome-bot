@@ -8,12 +8,18 @@ from utils import log
 
 def create_handlers() -> list:
     """Creates handlers that process `schedule` command."""
-    return [CommandHandler('schedule', schedule)]
+    return [CommandHandler('schedule', schedule, filters.Chat(settings.CHAT_ID))]
 
 
 async def schedule(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """When user uses the `schedule` command."""
     log('schedule')
+    if 'timestamp' in context.bot_data['schedule']:
+        time_past = datetime.now() - datetime.fromisoformat(context.bot_data['schedule']['timestamp'])
+        if time_past.total_seconds() < settings.SLOW_MODE:
+            await update.message.reply_text(
+                'Смотри выше ☝️', reply_to_message_id=context.bot_data['schedule']['message_id'])
+            return
     message = ''
     dow = datetime.now().weekday()
     if dow == 0:
@@ -30,6 +36,8 @@ async def schedule(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message = 'Пьём Маргариту и играем в баланс'
     elif dow == 6:
         message = 'Жива или мертва американская мафия?\n\nКто едет в Сакраменто?'
-    await update.message.reply_photo(
-        settings.SCHEDULE_ID, caption=message,
+    bot_message = await update.message.reply_photo(
+        settings.SCHEDULE_IMAGE, caption=message,
         reply_to_message_id=update.message.message_id)
+    context.bot_data['schedule']['timestamp'] = datetime.now().isoformat()
+    context.bot_data['schedule']['message_id'] = bot_message.message_id
