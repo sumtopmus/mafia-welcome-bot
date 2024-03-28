@@ -8,8 +8,9 @@ from handlers import admin, request, schedule, welcome
 async def post_init(app: Application) -> None:
     """Initializes bot with data and its tasks."""
     utils.log('intializing_players')
-    app.bot_data.setdefault('players', {})    
-    app.bot_data.setdefault('schedule', {})    
+    app.bot_data.setdefault('players', {})
+    app.bot_data.setdefault('schedule', {})
+    app.bot_data.setdefault('tournaments', {})
 
 
 def add_handlers(app: Application) -> None:

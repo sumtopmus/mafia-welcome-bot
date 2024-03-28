@@ -3,7 +3,7 @@
 run:
 	@ENV_FOR_DYNACONF=production python src/bot.py
 
-debug: clean-all
+debug: clean-logs clean-conversations
 	@python src/bot.py
 
 clean-all: clean-logs clean-data
