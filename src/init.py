@@ -2,8 +2,8 @@ from telegram.ext import Application
 
 import utils
 from handlers import error
-from handlers import debug, info
 from handlers import request, schedule, welcome
+from handlers.admin import debug, info
 
 
 async def post_init(app: Application) -> None:
