@@ -18,6 +18,7 @@ State = Enum('State', [
     'WAITING_FOR_TITLE',
     'FINDING_TOURNAMENT',
     'EDITING_TITLE',
+    'REGISTRATION',
     'DELETING_TOURNAMENT',
 ])
 
@@ -69,9 +70,11 @@ def construct_tournament_menu(context: ContextTypes.DEFAULT_TYPE) -> dict:
     tournament = get_tournament(context)
     state = State(context.user_data['conversation'])
     text = f'What do you want to do with *{tournament['title']}*?'
+    registration_button_text = 'Registration: ' + ('Open ✅' if tournament.get('registration', False) else 'Closed ❌')
     keyboard = [
         [
             InlineKeyboardButton("Edit Title", callback_data=State.EDITING_TITLE.name),
+            InlineKeyboardButton(registration_button_text, callback_data=State.REGISTRATION.name),
         ],
         [
             InlineKeyboardButton("Delete ❌", callback_data=State.DELETING_TOURNAMENT.name),

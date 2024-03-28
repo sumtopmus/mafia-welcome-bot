@@ -22,7 +22,7 @@ def create_handlers() -> list:
             ],
         },
         fallbacks=[
-            CommandHandler('cancel', cancel),
+            CommandHandler('cancel', show),
         ],
         allow_reentry=True,
         map_to_parent={
@@ -64,11 +64,3 @@ async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(**construct_main_menu())
     return State.MAIN_MENU
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
-    """When a user cancels the process."""
-    log('cancel')
-    message = 'Working with tournaments is canceled. You can start over.'
-    await update.message.reply_text(message)
-    return ConversationHandler.END

@@ -1,5 +1,4 @@
 from dynaconf import settings
-import logging
 from telegram import Update
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes, ConversationHandler, filters
 
@@ -22,7 +21,7 @@ def create_handlers() -> list:
             State.WAITING_FOR_TITLE: tournament_handlers(),
         },
         fallbacks=[
-            CommandHandler('cancel', cancel),
+            CommandHandler('cancel', admin_menu),
             CommandHandler('exit', exit),
         ],
         allow_reentry=True,
@@ -51,13 +50,6 @@ async def add_tournament_request(update: Update, context: ContextTypes.DEFAULT_T
     message = 'Please, enter the name of the tournament.'
     await update.callback_query.edit_message_text(message)
     return State.WAITING_FOR_TITLE
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Returns to the admin menu."""
-    log('cancel')
-    await admin_menu(update, context)
-    return State.MAIN_MENU
 
 
 async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

@@ -18,7 +18,10 @@ def create_handlers() -> list:
         states={
             State.TOURNAMENT: [
                 CallbackQueryHandler(title_edit_request, pattern="^" + State.EDITING_TITLE.name + "$"),
-                CallbackQueryHandler(delete_request, pattern="^" + State.DELETING_TOURNAMENT.name + "$")
+                CallbackQueryHandler(registration_change, pattern="^" + State.REGISTRATION.name + "$"),
+                CallbackQueryHandler(delete_request, pattern="^" + State.DELETING_TOURNAMENT.name + "$"),
+                CallbackQueryHandler(back, pattern="^" + State.TOURNAMENTS.name + "$"),
+                CallbackQueryHandler(back_to_main_menu, pattern="^" + State.MAIN_MENU.name + "$"),                
             ],
             State.EDITING_TITLE: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, title_edit)
@@ -29,8 +32,6 @@ def create_handlers() -> list:
             ]
         },
         fallbacks=[
-            CallbackQueryHandler(back, pattern="^" + State.TOURNAMENTS.name + "$"),
-            CallbackQueryHandler(back_to_main_menu, pattern="^" + State.MAIN_MENU.name + "$"),
             CommandHandler('cancel', tournament_menu)
         ],
         map_to_parent={
@@ -93,6 +94,15 @@ async def title_edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Stat
         context.bot_data['tournaments'][new_title]['title'] = new_title
         del context.bot_data['tournaments'][old_title]
         context.user_data['tournament'] = new_title
+    await tournament_menu(update, context)
+    return State.TOURNAMENT
+
+
+async def registration_change(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
+    """When a user presses on a registration button."""
+    log('registration_change')
+    tournament = get_tournament(context)
+    tournament['registration'] = not tournament.get('registration', False)
     await tournament_menu(update, context)
     return State.TOURNAMENT
 
