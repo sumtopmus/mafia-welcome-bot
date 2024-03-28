@@ -38,8 +38,8 @@ async def digest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             'Посмотри последний дайджест, он был не так давно.',
             reply_to_message_id=context.bot_data['latest_digest']['message_id'])
     else:
-        message = 'Дайджест чата:\n\n' + '\n'.join(f'{m['name']}: {m['text']}' for m in context.bot_data['messages'][-10:]) \
-        + '\n\n_#digest_'
+        message = 'Дайджест чата:\n\n' + '\n'.join(f"{m['name']}: {m['text']}" for m in context.bot_data['messages'][-10:]) \
+            + '\n\n_#digest_'
         bot_message = await update.message.reply_text(message)
         context.bot_data['latest_digest']['timestamp'] = datetime.now().isoformat()
         context.bot_data['latest_digest']['message_id'] = bot_message.message_id
@@ -49,6 +49,7 @@ async def digest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def daily_digest(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send morning message and add a new timer."""
     log('daily_digest')
-    message = 'Ежедневный дайджест:\n\n' + '\n'.join(context.bot_data['messages'][-10:]) + '\n\n_#digest #daily_'
+    message = 'Ежедневный дайджест:\n\n' + '\n'.join(f"{m['name']}: {m['text']}" for m in context.bot_data['messages'][-10:]) \
+        + '\n\n_#digest #daily_'
     await context.bot.sendMessage(chat_id=settings.DIGEST_CHAT_ID, text=message)
     context.bot_data['messages'] = []
