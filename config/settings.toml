@@ -8,6 +8,7 @@ LOG_PATH = 'logs/bot.log'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 # Notification message
 TIMEZONE = 'US/Eastern'
+DAILY_DIGEST_TIME = '07:00'
 ADMINS = [ '@PLACEHOLDER' ]
 
 [production]
