@@ -6,7 +6,7 @@ run:
 debug: clean-all
 	@python src/bot.py
 
-clean-all: clean-logs clean-data
+clean-all: clean-logs
 
 clean-logs:
 	@rm -rf logs

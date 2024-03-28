@@ -14,7 +14,6 @@ async def post_init(app: Application) -> None:
     app.bot_data.setdefault('players', {})    
     app.bot_data.setdefault('schedule', {})
     app.bot_data.setdefault('messages', [])
-    app.bot_data['messages'] = []
     app.bot_data.setdefault('latest_digest', {})
     app.bot_data['latest_digest'].setdefault('timestamp', datetime.now().isoformat())
     app.bot_data['latest_digest'].setdefault('message_id', None)
