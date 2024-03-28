@@ -30,7 +30,7 @@ def create_handlers() -> list:
     return [ConversationHandler(
         entry_points=[
             ChatJoinRequestHandler(join_request, chat_id=settings.CHAT_ID),
-            CommandHandler('join', join_request),
+            CommandHandler('join', join_request, ~filters.Chat(settings.CHAT_ID)),),
         ],
         states={
             State.WAITING_FOR_NICKNAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, set_nickname)],
@@ -41,7 +41,7 @@ def create_handlers() -> list:
             ConversationHandler.TIMEOUT: [TypeHandler(Update, timeout)],
         },
         fallbacks=[
-            CommandHandler('cancel', cancel),
+            CommandHandler('cancel', cancel, ~filters.Chat(settings.CHAT_ID)),),
         ],
         allow_reentry=True,
         conversation_timeout=settings.CONVERSATION_TIMEOUT,
