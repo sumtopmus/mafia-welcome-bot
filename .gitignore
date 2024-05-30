@@ -7,7 +7,6 @@ logs
 data
 
 # Dev and local environment
-.vscode
 *.code-workspace
 debug
 **/.env
