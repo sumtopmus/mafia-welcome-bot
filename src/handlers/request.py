@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CallbackQueryHandler, ChatJoinRequestHandler, CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler, TypeHandler
+from telegram.error import TelegramError
 
 from config import settings
 from utils import log
@@ -54,10 +55,15 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     """When a join request is sent."""
     log('join_request')
     user = update.effective_user
+    # TODO: temporary solution, should be removed after all the user data is updated
     if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['introduced']:
+        context.bot_data['players'][user.id]['answered'] = True
+    # END
+    if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['answered']:
         await user.approve_join_request(settings.CHAT_ID)
         return ConversationHandler.END
     context.bot_data['players'].setdefault(user.id, {'first_join_timestamp': datetime.now().isoformat()})
+    context.bot_data['players'][user.id]['answered'] = False
     context.bot_data['players'][user.id]['introduced'] = False
     message = (f'Доброе утро, {user.full_name}! American Mafia League приветствует вас! '
         'Подписывайтесь на наш канал, чтобы следить за событиями в AML.\n\n'
@@ -127,7 +133,11 @@ async def set_experience(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When the experience is submitted."""
     log('set_experience')
     context.bot_data['players'][update.effective_user.id]['experience'] = update.message.text
-    await update.effective_user.approve_join_request(settings.CHAT_ID)
+    context.bot_data['players'][update.effective_user.id]['answered'] = True
+    try:
+        await update.effective_user.approve_join_request(settings.CHAT_ID)
+    except TelegramError as e:
+        log(f'No join requests found: {e}')
     message = (f'Спасибо за анкету! Теперь вы можете пользоваться нашим чатом.')
     keyboard = [[InlineKeyboardButton(text='Перейти к чату', url=settings.CHAT_INVITE_LINK)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
