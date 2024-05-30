@@ -1,4 +1,3 @@
-from dynaconf import settings
 from warnings import filterwarnings
 import logging
 import os
@@ -7,6 +6,7 @@ from telegram.constants import ParseMode
 from telegram.ext import Application, Defaults, PicklePersistence
 from telegram.warnings import PTBUserWarning
 
+from config import settings
 from init import add_handlers, post_init
 
 

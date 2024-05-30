@@ -1,10 +1,10 @@
 .PHONY: run debug test clean-logs clean-data clean-conversations
 
 run:
-	@ENV_FOR_DYNACONF=production python src/bot.py
+	@ENV_FOR_DYNACONF=prod python src/bot.py
 
 debug: clean-all
-	@python src/bot.py
+	@ENV_FOR_DYNACONF=dev python src/bot.py
 
 clean-all: clean-logs clean-data
 

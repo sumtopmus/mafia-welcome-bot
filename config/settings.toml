@@ -10,7 +10,7 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIMEZONE = 'US/Eastern'
 ADMINS = [ '@PLACEHOLDER' ]
 
-[production]
+[prod]
 DEBUG = false
 TOKEN = 'SECRET_PLACEHOLDER'
 CHANNEL_USERNAME = 'PLACEHOLDER'
@@ -19,7 +19,7 @@ CONVERSATION_TIMEOUT = 86400            # 24 hours (in seconds)
 SLOW_MODE = 3600                        # 1 hour (in seconds)
 SCHEDULE_IMAGE = 'PLACEHOLDER'
 
-[development]
+[dev]
 DEBUG = true
 TOKEN = 'SECRET_PLACEHOLDER'
 CHANNEL_USERNAME = 'PLACEHOLDER'

@@ -9,8 +9,9 @@ data
 # Dev and local environment
 .vscode
 *.code-workspace
-**/*.local*
 debug
+**/.env
+**/*.local*
 
 # macOS environment
 .DS_Store

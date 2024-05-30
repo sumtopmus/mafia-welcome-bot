@@ -1,5 +1,5 @@
 from datetime import datetime
-from dynaconf import settings
+from config import settings
 import logging
 
 

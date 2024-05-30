@@ -1,9 +1,9 @@
 from datetime import datetime
-from dynaconf import settings
 from enum import Enum
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CallbackQueryHandler, ChatJoinRequestHandler, CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler, TypeHandler
 
+from config import settings
 from utils import log
 
 
