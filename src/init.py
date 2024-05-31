@@ -1,14 +1,16 @@
 from telegram.ext import Application
 
-import utils
+from utils import log
 from handlers import error
 from handlers import debug, info
-from handlers import request, schedule, welcome
+from handlers import admin, request, schedule, welcome
 
 
 async def post_init(app: Application) -> None:
     """Initializes bot with data and its tasks."""
-    utils.log('post_init')
+    log('post_init')
+    log(app.bot_data)
+    app.bot_data.setdefault('clubs', {})
     app.bot_data.setdefault('players', {})
     app.bot_data.setdefault('schedule', {})
 
@@ -21,5 +23,5 @@ def add_handlers(app: Application) -> None:
     for module in [debug, info]:
         app.add_handlers(module.create_handlers())
     # General chat handling.
-    for module in [request, schedule, welcome]:
+    for module in [admin, request, schedule, welcome]:
         app.add_handlers(module.create_handlers())

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Bot Debugger",
+            "name": "Python: Bot",
             "type": "debugpy",
             "request": "launch",
             "program": "src/bot.py",

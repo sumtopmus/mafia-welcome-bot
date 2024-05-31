@@ -3,12 +3,13 @@ import telegram.error
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from utils import log
+
 
 def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Error handler."""
-    logging.getLogger(__name__).error(
-        f'Exception while handling the update {update}:',
-        exc_info=context.error)
+    log(f'{context.error}\n\nException was raised while handling the update:\n\n{update}',
+        level=logging.ERROR, exc_info=context.error)
     # TODO: add actual error handling.
     try:
         raise context.error
