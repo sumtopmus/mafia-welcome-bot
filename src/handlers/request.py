@@ -58,6 +58,8 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     # TODO: temporary solution, should be removed after all the user data is updated
     if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['introduced']:
         context.bot_data['players'][user.id]['answered'] = True
+    else:
+        context.bot_data['players'][user.id]['answered'] = False
     # END
     if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['answered']:
         await user.approve_join_request(settings.CHAT_ID)
