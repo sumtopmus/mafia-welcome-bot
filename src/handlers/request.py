@@ -94,7 +94,7 @@ async def set_nickname(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(message, reply_markup=reply_markup)
+    await update.effective_user.send_message(message, reply_markup=reply_markup)
     return State.WAITING_FOR_TITLE
 
 
@@ -118,7 +118,7 @@ async def set_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     log('set_city')
     context.bot_data['players'][update.effective_user.id]['city'] = update.message.text
     message = (f'В каком клубе вы играете?')
-    await update.message.reply_text(message)
+    await update.effective_user.send_message(message)
     return State.WAITING_FOR_CLUB
 
 
@@ -127,7 +127,7 @@ async def set_club(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     log('set_club')
     context.bot_data['players'][update.effective_user.id]['club'] = update.message.text
     message = (f'Как давно вы играете в спортивную мафию?')
-    await update.message.reply_text(message)
+    await update.effective_user.send_message(message)
     return State.WAITING_FOR_EXPERIENCE
 
 
@@ -143,7 +143,7 @@ async def set_experience(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = (f'Спасибо за анкету! Теперь вы можете пользоваться нашим чатом.')
     keyboard = [[InlineKeyboardButton(text='Перейти к чату', url=settings.CHAT_INVITE_LINK)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(message, reply_markup=reply_markup)
+    await update.effective_user.send_message(message, reply_markup=reply_markup)
     return ConversationHandler.END
 
 
@@ -163,7 +163,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When a user cancels the process."""
     log('cancel')
     message = 'Вы можете заполнить анкету снова, нажав /join.'
-    await update.message.reply_text(message)
+    await update.effective_user.send_message(message)
     if update.chat_join_request:
         await update.chat_join_request.from_user.decline_join_request(
             update.chat_join_request.chat.id)
