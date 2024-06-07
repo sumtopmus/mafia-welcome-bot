@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler
 
 from utils import log
-from .menu import State, construct_main_menu, construct_back_button
+from .menu import State, construct_main_menu, construct_back_button, construct_clubs_menu
 
 
 def create_handlers() -> list:
@@ -12,9 +12,13 @@ def create_handlers() -> list:
         entry_points= [CommandHandler('admin', main_menu)],
         states={
             State.MAIN_MENU: [
-                CallbackQueryHandler(register_club_request, pattern="^" + State.ADDING_CLUB.name + "$")
+                CallbackQueryHandler(register_club_request, pattern="^" + State.CLUB_ADDING.name + "$"),
+                CallbackQueryHandler(clubs_menu, pattern="^" + State.CLUB_PICKING.name + "$"),
             ],
-            State.WAITING_FOR_CLUB_NAME: [
+            State.CLUBS_MENU: [
+                CallbackQueryHandler(main_menu, pattern="^" + State.MAIN_MENU.name + "$")
+            ],
+            State.CLUB_WAITING_FOR_NAME: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, set_club_name)
             ],
             State.BACK_BUTTON: [
@@ -25,7 +29,7 @@ def create_handlers() -> list:
             CommandHandler('cancel', cancel)
         ],
         allow_reentry=True,
-        name="entry_conversation",
+        name="admin_main_menu",
         persistent=True)]
 
 
@@ -41,13 +45,24 @@ async def main_menu(update: Update, context: CallbackContext) -> State:
     return State.MAIN_MENU
 
 
+async def clubs_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
+    log('clubs_menu')
+    if update.callback_query:
+        await update.callback_query.answer()
+        await update.callback_query.edit_message_text(**construct_clubs_menu(context))
+    else:
+        await update.message.reply_text(**construct_clubs_menu(context))
+    context.user_data['state'] = State.CLUBS_MENU
+    return State.CLUBS_MENU
+
+
 async def register_club_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
     """When a user wants to register a club."""
     log('register_club_request')
     await update.callback_query.answer()
     message = 'Please, enter the name of the club you want to register.'
     await update.callback_query.edit_message_text(message)
-    return State.WAITING_FOR_CLUB_NAME
+    return State.CLUB_WAITING_FOR_NAME
 
 
 async def set_club_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
