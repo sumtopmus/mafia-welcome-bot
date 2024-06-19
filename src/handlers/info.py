@@ -1,5 +1,6 @@
 import logging
 from telegram import Update
+from telegram.error import BadRequest
 from telegram.ext import CommandHandler, ContextTypes, filters
 
 from config import settings
@@ -16,4 +17,7 @@ async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     log('info')
     log(f'chat_id: {update.effective_chat.id}', level=logging.INFO)
     log(f'user_id: {update.effective_user.id}', level=logging.INFO)
-    await update.message.delete()
+    try:
+        await update.message.delete()
+    except BadRequest as e:
+        log(f'cannot delete the "/info" message', level=logging.ERROR)
