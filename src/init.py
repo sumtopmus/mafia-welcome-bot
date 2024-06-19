@@ -1,4 +1,5 @@
 import logging
+from telegram.constants import UpdateType
 from telegram.ext import Application
 from telegram.warnings import PTBUserWarning
 import re
@@ -7,7 +8,7 @@ from warnings import filterwarnings
 from config import settings
 from handlers import error
 from handlers import debug, info
-from handlers import request, schedule, welcome
+from handlers import schedule, welcome
 from utils import log
 
 
@@ -29,6 +30,11 @@ def setup_logging() -> None:
     filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
 
 
+def allowed_updates() -> list:
+    """Returns a list of allowed updates."""
+    return [UpdateType.MESSAGE, UpdateType.CALLBACK_QUERY, UpdateType.CHAT_MEMBER, UpdateType.CHAT_JOIN_REQUEST]
+
+
 async def post_init(app: Application) -> None:
     """Initializes bot with data and its tasks."""
     log('post_init')
@@ -46,5 +52,5 @@ def add_handlers(app: Application) -> None:
     for module in [debug, info]:
         app.add_handlers(module.create_handlers())
     # General chat handling.
-    for module in [request, schedule, welcome]:
+    for module in [schedule, welcome]:
         app.add_handlers(module.create_handlers())

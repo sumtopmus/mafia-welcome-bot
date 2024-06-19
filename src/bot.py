@@ -4,7 +4,7 @@ from telegram.constants import ParseMode
 from telegram.ext import Application, Defaults, PicklePersistence
 
 from config import settings
-from init import add_handlers, post_init, setup_logging
+from init import add_handlers, allowed_updates, post_init, setup_logging
 
 
 def main() -> None:
@@ -26,7 +26,7 @@ def main() -> None:
     # Add handlers.
     add_handlers(app)
     # Start the bot.
-    app.run_polling()
+    app.run_polling(allowed_updates=allowed_updates())
 
 
 if __name__ == "__main__":
