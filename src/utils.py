@@ -14,7 +14,7 @@ def log(message: str, level=logging.DEBUG) -> None:
 
 def user_repr(user) -> str:
     """Returns a string representation of a user."""
-    return f'{user.id} ({user.full_name}, https://t.me/{getattr(user, 'username', user.id)})'
+    return f'{user.id} ({user.full_name}, https://t.me/{getattr(user, "username", user.id)})'
 
 
 def nested_getattr(obj, attr, default=None):
