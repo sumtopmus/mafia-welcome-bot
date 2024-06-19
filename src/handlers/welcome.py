@@ -4,8 +4,7 @@ import logging
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ChatMemberStatus
 from telegram.ext import CallbackContext, CallbackQueryHandler, ChatJoinRequestHandler, ChatMemberHandler, CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler, TypeHandler
-from telegram.error import TelegramError
-
+from telegram.error import Forbidden, TelegramError
 from config import settings
 import utils
 
@@ -101,11 +100,14 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
         if user.is_bot:
             utils.log(f'new user is a bot')
             continue
-        if user.id not in context.bot_data['players']:
+        if user.id not in context.bot_data['players'] or not context.bot_data['players'][user.id]['answered']:
             await update.message.delete()
-            await initiate_questionnaire(update, context)
-            utils.log(f'{utils.user_repr(user)} is given the questionnaire', logging.INFO)
-            questionnaire_initiated = True
+            try:
+                await initiate_questionnaire(update, context)
+                utils.log(f'{utils.user_repr(user)} is given the questionnaire', logging.INFO)
+                questionnaire_initiated = True
+            except Forbidden as e:
+                utils.log(f'{utils.user_repr(user)} cannot receive the bot\'s messages ({e})', logging.ERROR)
             await context.bot.ban_chat_member(update.message.chat.id, user.id)
             await context.bot.unban_chat_member(update.message.chat.id, user.id)
             utils.log(f'{utils.user_repr(user)} is kicked', logging.INFO)
