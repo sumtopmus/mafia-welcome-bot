@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import ContextTypes, filters, MessageHandler
 
 from config import settings
-import utils
+from utils import log
 
 
 def create_handlers() -> list:
@@ -15,21 +15,21 @@ def create_handlers() -> list:
 
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When new user enters the chat."""
-    utils.log('welcome')
+    log('welcome')
     for user in update.message.new_chat_members:
-        utils.log(f'new user: {user.id} ({user.full_name})', logging.INFO)
+        log(f'{user.id} ({user.full_name}) join the chat', logging.INFO)
         if user.is_bot:
-            utils.log(f'new user is a bot')
+            log(f'new user is a bot')
             continue
         if user.id not in context.bot_data['players']:
-            utils.log(f'no data for accepted user {user.id} ({user.full_name})', logging.INFO)
+            log(f'no data for accepted user {user.id} ({user.full_name})', logging.INFO)
             continue
         titled_mention = context.bot_data['players'][user.id]['nickname']
         title = context.bot_data['players'][user.id]['title']
         if title:
             titled_mention = title + ' ' + titled_mention
         if context.bot_data['players'][user.id]['introduced']:
-            utils.log(f'user {user.id} already introduced themselves', logging.INFO)
+            log(f'user {user.id} already introduced themselves', logging.INFO)
             message = (
                 'Вы только посмотрите, кто к нам вернулся! Аплодисменты!\n\n'
                 f'Встречайте – {titled_mention} ({user.mention_markdown()})!')

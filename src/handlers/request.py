@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+import logging
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CallbackQueryHandler, ChatJoinRequestHandler, CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler, TypeHandler
 from telegram.error import TelegramError
@@ -55,14 +56,17 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     """When a join request is sent."""
     log('join_request')
     user = update.effective_user
+    log(f'{user.id} ({user.full_name}) requested to join the chat', logging.INFO)
     # TODO: temporary solution, should be removed after all the user data is updated
-    if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['introduced']:
-        context.bot_data['players'][user.id]['answered'] = True
-    else:
-        context.bot_data['players'][user.id]['answered'] = False
+    if user.id in context.bot_data['players']:
+        if context.bot_data['players'][user.id]['introduced']:
+            context.bot_data['players'][user.id]['answered'] = True
+        else:
+            context.bot_data['players'][user.id]['answered'] = False
     # END
     if user.id in context.bot_data['players'] and context.bot_data['players'][user.id]['answered']:
         await user.approve_join_request(settings.CHAT_ID)
+        log(f'{user.id} ({user.full_name}) already answered the questionnaire, the request is approved', logging.INFO)
         return ConversationHandler.END
     context.bot_data['players'].setdefault(user.id, {'first_join_timestamp': datetime.now().isoformat()})
     context.bot_data['players'][user.id]['answered'] = False
@@ -134,28 +138,32 @@ async def set_club(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
 async def set_experience(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When the experience is submitted."""
     log('set_experience')
-    context.bot_data['players'][update.effective_user.id]['experience'] = update.message.text
-    context.bot_data['players'][update.effective_user.id]['answered'] = True
+    user = update.effective_user
+    context.bot_data['players'][user.id]['experience'] = update.message.text
+    context.bot_data['players'][user.id]['answered'] = True
     try:
-        await update.effective_user.approve_join_request(settings.CHAT_ID)
+        await user.approve_join_request(settings.CHAT_ID)
+        log(f'{user.id} ({user.full_name}) just finished the questionnaire, the request is approved', logging.INFO)
     except TelegramError as e:
         log(f'No join requests found: {e}')
     message = (f'Спасибо за анкету! Теперь вы можете пользоваться нашим чатом.')
     keyboard = [[InlineKeyboardButton(text='Перейти к чату', url=settings.CHAT_INVITE_LINK)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.effective_user.send_message(message, reply_markup=reply_markup)
+    await user.send_message(message, reply_markup=reply_markup)
     return ConversationHandler.END
 
 
 async def timeout(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """When the conversation timepout is exceeded."""
     log('timeout')
+    user = update.effective_user
     message = (
         'Уже прошли сутки, а вы всё ещё не заполнили анкету. '
         'Мы отклоняем вашу заявку, но вы всегда можете податься '
         'снова, нажав /join.')
-    await update.effective_user.send_message(message)
-    await update.effective_user.decline_join_request(settings.CHAT_ID)
+    await user.send_message(message)
+    await user.decline_join_request(settings.CHAT_ID)
+    log(f'{user.id} ({user.full_name}) timed out, the request is declined', logging.INFO)
     return ConversationHandler.END
 
 
