@@ -107,6 +107,8 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State:
                 utils.log(f'{utils.user_repr(user)} is given the questionnaire', logging.INFO)
                 questionnaire_initiated = True
             except Forbidden as e:
+                message = f'{utils.mention(user)} is trying to join the AML chat, but the bot cannot send messages to them.'
+                await context.bot.send_message(settings.ADMIN_CHAT_ID, message)
                 utils.log(f'{utils.user_repr(user)} cannot receive the bot\'s messages ({e})', logging.ERROR)
             await context.bot.ban_chat_member(update.message.chat.id, user.id)
             await context.bot.unban_chat_member(update.message.chat.id, user.id)
